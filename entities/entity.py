@@ -6,6 +6,9 @@ from engine.window_settings import WindowSettings
 
 class Entity(Drawable):
 
+    """
+    Base Entity: Every interactable object on the screen inherits this class
+    """
     # Constructor for entity -> sets position, size
     def __init__(self, position: Vector, size: Vector, color: Color, image: pygame.image) -> None:
 
@@ -13,7 +16,7 @@ class Entity(Drawable):
         self.size: Vector = size
 
         self.color: Color = color
-        self.collisionBox: pygame.Rect = pygame.Rect(tuple(self.position), tuple(self.size))
+        
         if image == None:
             self.image = None
         else:
@@ -48,6 +51,9 @@ class Entity(Drawable):
             super().draw_image(screen, self.image, tuple(self.position))
 
 
-    def collision(self, entity):
-        pass
-        #if entity.x < self.x < entity.x + entity.size and 
+    def collides(self, entity: "Entity") -> bool: 
+        m_collisionBox: pygame.Rect = pygame.Rect(tuple(self.position), tuple(self.size))
+        other_collisionBox: pygame.Rect = pygame.Rect(tuple(entity.position), tuple(entity.size))
+        if m_collisionBox.colliderect(other_collisionBox):
+            return True
+        return False

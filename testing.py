@@ -1,6 +1,8 @@
+from entities.entity import Entity
 from entities.apple import Apple
 import pygame
 
+from world.area import HashMap, from_entities
 from engine.window import Window
 from engine.mathfunctions import *
 from engine.drawable import DrawTypes
@@ -41,12 +43,21 @@ for x in range(500):
 
     apple: Apple = Apple(pos, size, color, loaded_images.EntImages.Herbivore)
     apples.append(apple)
-
-
+   
+hashmap: HashMap = from_entities(30, creatures + apples)
 
 sceneObjects = {    "creatures": creatures, 
                     "apples": apples
                     }
+
+creature: Herbivore
+for creature in creatures:
+    print(f"Original position: {creature.position}")
+    for aaa in hashmap.query(creature):
+        if aaa != creature: print(aaa.position)
+    break
+
+
 
 # Main Game Loop
 while win.events_struct.event_running:
@@ -63,15 +74,42 @@ while win.events_struct.event_running:
     ## Here the scene objects get drawn ##
     
     
-    for apple in sceneObjects["apples"]:
-        apple.draw_entity(win.screen, DrawTypes.RECT)
+    #for apple in sceneObjects["apples"]:
+    #    apple.draw_entity(win.screen, DrawTypes.RECT)
 
 
-    creature: Herbivore
-    for creature in sceneObjects["creatures"]:
-        creature.draw_entity(win.screen, DrawTypes.IMAGE)
-        movement: int = 5
-        creature.move(Vector(random.randint(-movement, movement), random.randint(-movement, movement)), win.config)
+    #creature: Entity
+    #for creature in sceneObjects["creatures"]:
+    
+    
+    for key in list(hashmap.grid):
+        
+        for creature in hashmap.grid[key]:
+            
+            if type(creature) == Apple:
+                creature.draw_entity(win.screen, DrawTypes.RECT)
+
+            elif type(creature) == Herbivore:
+
+                key = hashmap.key(creature)
+                
+                creature.draw_entity(win.screen, DrawTypes.IMAGE)
+                movement: int = 5
+                creature.move(Vector(random.randint(-movement, movement), random.randint(-movement, movement)), win.config)
+                if key != hashmap.key(creature):   
+                    hashmap.remove_from_key(key, creature)
+                    hashmap.insert(creature)
+                    
+                for otherEntity in hashmap.query(creature):
+                    if type(otherEntity) == Apple:
+                        if creature.collides(otherEntity):
+                            key = hashmap.key(otherEntity)
+                            #hashmap.remove_from_key(key, otherEntity)
+                            #apples.remove(otherEntity)
+                            creature.energy += 200
+                            break
+            
+    
 
     ## End
 
@@ -83,6 +121,3 @@ while win.events_struct.event_running:
 
     # Flip the display
     pygame.display.flip()
-
-# Quit (calling destructors)
-pygame.quit()

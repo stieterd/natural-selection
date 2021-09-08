@@ -59,4 +59,13 @@ class DefinedColors:
     green = Color(30, 225, 30)
     blue = Color(30, 30, 225)
 
+class simpleMath:
+
+    def clamp(x: float, a: float, b: float) -> float: # Clamp the value(x) in between two values (a and b)
+        return math.min(math.max(x,a),b)
     
+    def sat(x: float) -> float: # clamp the value between 0 and 1
+        return math.min(math.max(x, 0.0), 1.0)
+
+    def lerp(x: float, a: float, b: float) -> float: # lineair interpolation lol
+        return x * (b-a) + a
