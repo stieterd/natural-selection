@@ -52,8 +52,12 @@ class Entity(Drawable):
 
 
     def collides(self, entity: "Entity") -> bool: 
-        m_collisionBox: pygame.Rect = pygame.Rect(tuple(self.position), tuple(self.size))
-        other_collisionBox: pygame.Rect = pygame.Rect(tuple(entity.position), tuple(entity.size))
-        if m_collisionBox.colliderect(other_collisionBox):
-            return True
-        return False
+        # m_collisionBox: pygame.Rect = pygame.Rect(tuple(self.position), tuple(self.size))
+        # other_collisionBox: pygame.Rect = pygame.Rect(tuple(entity.position), tuple(entity.size))
+        # if m_collisionBox.colliderect(other_collisionBox):
+        #     return True
+        # return False
+        if (self.position.x>=entity.position.x + entity.size.x) or (self.position.x + self.size.x<=entity.position.x) or (self.position.y + self.size.y<=entity.position.y) or (self.position.y>=entity.position.y + entity.size.y):
+            return False
+            
+        return True
