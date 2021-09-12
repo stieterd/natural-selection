@@ -10,6 +10,7 @@ from engine.window import Window
 from engine.mathfunctions import *
 from engine.drawable import DrawTypes
 
+from multiprocessing import Pool
 
 import pygame
 import random
@@ -31,12 +32,12 @@ from images import loaded_images
 creatures = []
 apples = []
 
-for x in range(500):
+for x in range(200):
     pos: Vector = Vector(random.randint(0, WIDTH), random.randint(0, HEIGHT))
     color: Color = DefinedColors.black
 
     size: Vector = Vector(10, 10)
-    senserange: float = 30
+    senserange: float = 20
     speed: int = 2
 
     dna: Dna = Dna(size, senserange, speed)
@@ -44,7 +45,8 @@ for x in range(500):
     ent: Herbivore = Herbivore(EntTypes.herbivores, pos, dna, DefinedColors.black, loaded_images.EntImages.Herbivore)
 
     creatures.append(ent)
-    
+
+for x in range(200):   
     pos: Vector = Vector(random.randint(0, WIDTH), random.randint(0, HEIGHT))
     size: Vector = Vector(10, 10)
     color: Color = DefinedColors.red
@@ -56,7 +58,7 @@ sceneObjects = {    EntTypes.herbivores: creatures,
                     EntTypes.apples: apples
                     }
 
-WorldMap: World = World(300, sceneObjects)
+WorldMap: World = World(50, sceneObjects)
 
 # Main Game Loop
 while win.events_struct.event_running:
@@ -84,32 +86,48 @@ while win.events_struct.event_running:
 
                 elif entity.entityType == EntTypes.herbivores: # String comparions takes a lot of processing power
 
-                    cell = WorldMap.key(entity)
-
                     closestApple: Apple = None
-                    minDistance: float = entity.dna.senserange + 1 # Very big value
+                    minDistance: float = entity.dna.senserange # Very big value
+                    
+                    nTiles = max(round(entity.dna.senserange / WorldMap.cell_size), 1)
 
-                    currentCell = WorldMap.query(entity, EntTypes.apples)
+                    position = Vector(entity.position.x + entity.size.x//2 - entity.dna.senserange, entity.position.y + entity.size.y//2 - entity.dna.senserange)
+                    tiles = [] 
+                    
+                    for y in range(nTiles * 2):
+                        lst = []
+                        for x in range(nTiles * 2):
+                            p = Vector(position.x + x * WorldMap.cell_size, position.y + y * WorldMap.cell_size)
+                            tup = WorldMap.key_pos(p)
+                            lst.append(Vector(tup[0], tup[1]))
+                        tiles.append(lst)
+                    
+                    tiles = [item for sublist in tiles for item in sublist]
+                    
+                    for tile in tiles:
 
-                    for apple in currentCell:
-                        
-                        if entity.collides(apple):
-                            key = WorldMap.key(apple)
-                            WorldMap.remove_from_key(key, apple)
-                            
-                            entity.energy += apple.glucose
-                            
-                        else:
-                            distance = euclidean(tuple(apple.position), tuple(entity.position))
-                            if distance < entity.dna.senserange and distance < minDistance:
+                        #pygame.draw.rect(win.screen, tuple(DefinedColors.black), (tuple(tile), tuple(Vector(WorldMap.cell_size, WorldMap.cell_size))), width=1)
+
+                        #currentCell = WorldMap.query(entity, EntTypes.apples)
+                        currentCell = WorldMap.query_from_pos(tile, EntTypes.apples)
+                        for apple in currentCell:
+                            distance = euclidean(tuple(apple.position + entity.size//2), tuple(entity.position))
+
+                            if entity.collides(apple):
+                                key = WorldMap.key(apple)
+                                WorldMap.remove_from_key(key, apple)
+                                entity.energy += apple.glucose
+
+                            elif distance < entity.dna.senserange and distance < minDistance:
                                 closestApple = apple
                                 minDistance = distance
-
-                
+                                        
                     # Entity functions
                     entity.draw_entity(win.screen, DrawTypes.IMAGE)
-                    pygame.draw.circle(win.screen, tuple(DefinedColors.blue), tuple(entity.position + entity.size//2), entity.dna.senserange, width=2)
+                    #pygame.draw.circle(win.screen, tuple(DefinedColors.blue), tuple(entity.position + entity.size//2), entity.dna.senserange, width=2)                        
 
+                    cell = WorldMap.key(entity) # the key of the cell the entity is inside
+            
                     if closestApple == None:
                         entity.move(Vector(random.randint(-entity.dna.speed, entity.dna.speed), random.randint(-entity.dna.speed, entity.dna.speed)), win.config)
                         #entity.move_towards(Vector(random.randint(0, WIDTH), random.randint(0, HEIGHT)), win.config)
@@ -119,6 +137,7 @@ while win.events_struct.event_running:
                     if cell != WorldMap.key(entity):   
                         WorldMap.remove_from_key(cell, entity)
                         WorldMap.insert(entity)   
+
     ## End
 
     # Draw fps

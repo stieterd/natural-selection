@@ -3,10 +3,7 @@ from entities.types import EntTypes
 from engine.mathfunctions import *
 from entities.entity import Entity
 
-from typing import TypedDict
 import random
-from dataclasses import dataclass
-
 import math
 import time
 
