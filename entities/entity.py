@@ -9,10 +9,13 @@ class Entity(Drawable):
     """
     Base Entity: Every interactable object on the screen inherits this class
     """
+    
     # Constructor for entity -> sets position, size
     def __init__(self, position: Vector, size: Vector, color: Color, image: pygame.image) -> None:
 
+        self.START_POSITION: Vector = position # CONSTANT, WONT EVER CHANGE
         self.position: Vector = position
+        
         self.size: Vector = size
 
         self.color: Color = color
@@ -36,12 +39,9 @@ class Entity(Drawable):
             self.position.y += abs(translate.y)
         elif self.position.y + self.size.y > winsettings.screen_height:
             self.position.y -= abs(translate.y)
-
-        #if 0 + self.size.y <= self.position.y + translate.y + self.size.y<= winsettings.screen_height - self.size.y:
-        #    self.position.y += translate.y
         
 
-    # virtual method, can be overwritten by parent class, draws entity to the screen
+    # virtual method, may be overwritten by parent class, draws entity to the screen
     def draw_entity(self, screen: pygame.Surface, drawmethod: int) -> None:
 
         if drawmethod == DrawTypes.RECT:
@@ -50,13 +50,8 @@ class Entity(Drawable):
         elif drawmethod == DrawTypes.IMAGE:
             super().draw_image(screen, self.image, tuple(self.position))
 
-
+    # virtual method, may be overwritten by parent class, returns if entity collides with other entity
     def collides(self, entity: "Entity") -> bool: 
-        # m_collisionBox: pygame.Rect = pygame.Rect(tuple(self.position), tuple(self.size))
-        # other_collisionBox: pygame.Rect = pygame.Rect(tuple(entity.position), tuple(entity.size))
-        # if m_collisionBox.colliderect(other_collisionBox):
-        #     return True
-        # return False
         if (self.position.x>=entity.position.x + entity.size.x) or (self.position.x + self.size.x<=entity.position.x) or (self.position.y + self.size.y<=entity.position.y) or (self.position.y>=entity.position.y + entity.size.y):
             return False
             

@@ -3,7 +3,7 @@ import pygame
 # Basically a namespace lmfaooo
 class EntImages:
     
-    Herbivore = pygame.image.load("images/entities/smily.png")
+    Herbivore = pygame.image.load("images/entities/koe2.png").convert_alpha()
 
 
 # basically abother namespace lool
