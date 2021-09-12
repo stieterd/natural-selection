@@ -31,7 +31,7 @@ from images import loaded_images
 creatures = []
 apples = []
 
-for x in range(10):
+for x in range(500):
     pos: Vector = Vector(random.randint(0, WIDTH), random.randint(0, HEIGHT))
     color: Color = DefinedColors.black
 
@@ -89,11 +89,13 @@ while win.events_struct.event_running:
                     closestApple: Apple = None
                     minDistance: float = entity.dna.senserange + 1 # Very big value
 
-                    for apple in WorldMap.query(entity, EntTypes.apples):
+                    currentCell = WorldMap.query(entity, EntTypes.apples)
+
+                    for apple in currentCell:
                         
                         if entity.collides(apple):
                             key = WorldMap.key(apple)
-                            WorldMap.remove_from_key(key, apple)
+                            #WorldMap.remove_from_key(key, apple)
                             
                             entity.energy += apple.glucose
                             
@@ -106,7 +108,7 @@ while win.events_struct.event_running:
                 
                     # Entity functions
                     entity.draw_entity(win.screen, DrawTypes.IMAGE)
-                    pygame.draw.circle(win.screen, tuple(DefinedColors.blue), tuple(entity.position), entity.dna.senserange, width=2)
+                    # pygame.draw.circle(win.screen, tuple(DefinedColors.blue), tuple(entity.position), entity.dna.senserange, width=2)
 
                     if closestApple == None:
                         entity.move(Vector(random.randint(-entity.dna.speed, entity.dna.speed), random.randint(-entity.dna.speed, entity.dna.speed)), win.config)
