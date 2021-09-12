@@ -1,4 +1,5 @@
 
+from entities.types import EntTypes
 from engine.mathfunctions import *
 from entities.entity import Entity
 
@@ -8,8 +9,6 @@ from dataclasses import dataclass
 
 import math
 import time
-
-
 
 # this is because dict.setdefault does not work. 
 def dict_setdefault(dictionary: dict, key: str, value: list) -> list or None:
@@ -46,7 +45,7 @@ class HashMap(object):
         Remove entity from hashmap
         """
         
-        dict_setdefault( self.grid, key, []).remove(entity)
+        dict_setdefault(dict_setdefault( self.grid, key, {}), entity.entityType, []).remove(entity)
         
 
     def insert(self, entity: Entity) -> None:
@@ -54,14 +53,14 @@ class HashMap(object):
         Insert entity into the hashmap.
         """
         
-        dict_setdefault( self.grid, self.key(entity), []).append(entity)
+        dict_setdefault(dict_setdefault( self.grid, self.key(entity), {}), entity.entityType, []).append(entity)
    
-    def query(self, entity: Entity) -> list:
+    def query(self, entity: Entity, entType:int) -> list:
         """
         Return all objects in the cell specified by point.
         """
         
-        return dict_setdefault( self.grid, self.key(entity), [])
+        return dict_setdefault(dict_setdefault( self.grid, self.key(entity), {}), entType, [])
 
 
 

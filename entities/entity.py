@@ -11,8 +11,10 @@ class Entity(Drawable):
     """
     
     # Constructor for entity -> sets position, size
-    def __init__(self, position: Vector, size: Vector, color: Color, image: pygame.image) -> None:
+    def __init__(self, entityType, position: Vector, size: Vector, color: Color, image: pygame.image) -> None:
 
+        self.entityType = entityType
+        
         self.START_POSITION: Vector = position # CONSTANT, WONT EVER CHANGE
         self.position: Vector = position
         

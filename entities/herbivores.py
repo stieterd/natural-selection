@@ -13,8 +13,8 @@ class Herbivore(Entity):
 
     STARTING_ENERGY = 100 # The energy an entity starts with when entering the first day
 
-    def __init__(self, position: Vector, size: Vector, senserange: float, color: Color, image: pygame.image) -> None:
-        super().__init__(position, size, color, image)
+    def __init__(self, entityType: int, position: Vector, size: Vector, senserange: float, color: Color, image: pygame.image) -> None:
+        super().__init__(entityType, position, size, color, image)
         
         self.senserange = senserange # This is the range from where the entity will be able to see an apple and will go towards it
 

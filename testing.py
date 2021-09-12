@@ -1,14 +1,16 @@
 from entities.entity import Entity
+from entities.types import EntTypes
 from entities.apple import Apple
-import pygame
+from entities.herbivores import Herbivore
 
 from world.area import World
+
 from engine.window import Window
 from engine.mathfunctions import *
 from engine.drawable import DrawTypes
-from entities.herbivores import Herbivore
 
 
+import pygame
 import random
 
 # CONSTANTS
@@ -23,7 +25,7 @@ win = Window(WIDTH, HEIGHT)
 # Import ONLY after initializing window!!!!!!
 from images import loaded_images
 
-win.toggle_fullscreen()
+#win.toggle_fullscreen()
 
 creatures = []
 apples = []
@@ -32,8 +34,9 @@ for x in range(500):
     pos: Vector = Vector(random.randint(0, WIDTH), random.randint(0, HEIGHT))
     size: Vector = Vector(10, 10)
     color: Color = DefinedColors.black
+    senserange: float = 50
 
-    ent: Herbivore = Herbivore(pos, size, DefinedColors.black, loaded_images.EntImages.Herbivore)
+    ent: Herbivore = Herbivore(EntTypes.herbivores, pos, size, senserange, DefinedColors.black, loaded_images.EntImages.Herbivore)
 
     creatures.append(ent)
     
@@ -41,21 +44,14 @@ for x in range(500):
     size: Vector = Vector(10, 10)
     color: Color = DefinedColors.red
 
-    apple: Apple = Apple(pos, size, color, loaded_images.EntImages.Herbivore)
+    apple: Apple = Apple(EntTypes.apples, pos, size, color, loaded_images.EntImages.Herbivore)
     apples.append(apple)
    
-WorldMap: World = World(30, creatures + apples)
-
-sceneObjects = {    "creatures": creatures, 
-                    "apples": apples
+sceneObjects = {    EntTypes.herbivores: creatures, 
+                    EntTypes.apples: apples
                     }
 
-creature: Herbivore
-for creature in creatures:
-    print(f"Original position: {creature.position}")
-    for aaa in WorldMap.query(creature):
-        if aaa != creature: print(aaa.position)
-    break
+WorldMap: World = World(60, sceneObjects)
 
 # Main Game Loop
 while win.events_struct.event_running:
@@ -70,34 +66,41 @@ while win.events_struct.event_running:
     win.paused()   
 
     ## Here the scene objects get drawn ##
-        
-    for key in list(WorldMap.grid):
-        
-        for creature in WorldMap.grid[key]:
-            
-            if type(creature) == Apple:
-                creature.draw_entity(win.screen, DrawTypes.RECT)
 
-            elif type(creature) == Herbivore:
+    
 
-                key = WorldMap.key(creature)
-                
-                creature.draw_entity(win.screen, DrawTypes.IMAGE)
-                movement: int = 2
-                creature.move(Vector(random.randint(-movement, movement), random.randint(-movement, movement)), win.config)
-                if key != WorldMap.key(creature):   
-                    WorldMap.remove_from_key(key, creature)
-                    WorldMap.insert(creature)
+    for gridCell in list(WorldMap.grid): # MIGHT REMOVE LIST CAST
+
+        for entityType in list(WorldMap.grid[gridCell]):
+
+            entity: Entity
+            for entity in WorldMap.grid[gridCell][entityType]:
+
+                if entity.entityType == EntTypes.apples: # String comparison takes a lot of processing power, ill probably switch to integers
+                    entity.draw_entity(win.screen, DrawTypes.RECT)
+
+                elif entity.entityType == EntTypes.herbivores: # String comparions takes a lot of processing power
+
+                    cell = WorldMap.key(entity)
                     
-                for otherEntity in WorldMap.query(creature):
-                    if type(otherEntity) == Apple:
-                        if creature.collides(otherEntity):
-                            key = WorldMap.key(otherEntity)
-                            WorldMap.remove_from_key(key, otherEntity)
-                            #apples.remove(otherEntity)
-                            creature.energy += 200
-                            break
-            
+                    # Entity functions
+                    entity.draw_entity(win.screen, DrawTypes.IMAGE)
+                    movement: int = 2
+                    entity.move(Vector(random.randint(-movement, movement), random.randint(-movement, movement)), win.config)
+                    
+                    if cell != WorldMap.key(entity):   
+                        WorldMap.remove_from_key(cell, entity)
+                        WorldMap.insert(entity)
+                        
+                    for apple in WorldMap.query(entity, EntTypes.apples):
+                        
+                        if entity.collides(apple):
+                                key = WorldMap.key(apple)
+                                WorldMap.remove_from_key(key, apple)
+                                
+                                entity.energy += apple.glucose
+                                break
+                
     
 
     ## End
