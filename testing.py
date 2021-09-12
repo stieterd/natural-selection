@@ -1,3 +1,4 @@
+from entities.dna import Dna
 from entities.entity import Entity
 from entities.types import EntTypes
 from entities.apple import Apple
@@ -30,13 +31,17 @@ from images import loaded_images
 creatures = []
 apples = []
 
-for x in range(500):
+for x in range(10):
     pos: Vector = Vector(random.randint(0, WIDTH), random.randint(0, HEIGHT))
-    size: Vector = Vector(10, 10)
     color: Color = DefinedColors.black
-    senserange: float = 50
 
-    ent: Herbivore = Herbivore(EntTypes.herbivores, pos, size, senserange, DefinedColors.black, loaded_images.EntImages.Herbivore)
+    size: Vector = Vector(10, 10)
+    senserange: float = 100
+    speed: int = 2
+
+    dna: Dna = Dna(size, senserange, speed)
+
+    ent: Herbivore = Herbivore(EntTypes.herbivores, pos, dna, DefinedColors.black, loaded_images.EntImages.Herbivore)
 
     creatures.append(ent)
     
@@ -51,7 +56,7 @@ sceneObjects = {    EntTypes.herbivores: creatures,
                     EntTypes.apples: apples
                     }
 
-WorldMap: World = World(60, sceneObjects)
+WorldMap: World = World(30, sceneObjects)
 
 # Main Game Loop
 while win.events_struct.event_running:
@@ -67,13 +72,11 @@ while win.events_struct.event_running:
 
     ## Here the scene objects get drawn ##
 
-    
-
     for gridCell in list(WorldMap.grid): # MIGHT REMOVE LIST CAST
 
         for entityType in list(WorldMap.grid[gridCell]):
 
-            entity: Entity
+            entity: Entity 
             for entity in WorldMap.grid[gridCell][entityType]:
 
                 if entity.entityType == EntTypes.apples: # String comparison takes a lot of processing power, ill probably switch to integers
@@ -82,26 +85,38 @@ while win.events_struct.event_running:
                 elif entity.entityType == EntTypes.herbivores: # String comparions takes a lot of processing power
 
                     cell = WorldMap.key(entity)
-                    
-                    # Entity functions
-                    entity.draw_entity(win.screen, DrawTypes.IMAGE)
-                    movement: int = 2
-                    entity.move(Vector(random.randint(-movement, movement), random.randint(-movement, movement)), win.config)
-                    
-                    if cell != WorldMap.key(entity):   
-                        WorldMap.remove_from_key(cell, entity)
-                        WorldMap.insert(entity)
-                        
+
+                    closestApple: Apple = None
+                    minDistance: float = entity.dna.senserange + 1 # Very big value
+
                     for apple in WorldMap.query(entity, EntTypes.apples):
                         
                         if entity.collides(apple):
-                                key = WorldMap.key(apple)
-                                WorldMap.remove_from_key(key, apple)
-                                
-                                entity.energy += apple.glucose
-                                break
+                            key = WorldMap.key(apple)
+                            WorldMap.remove_from_key(key, apple)
+                            
+                            entity.energy += apple.glucose
+                            
+                        else:
+                            distance = euclidean(tuple(apple.position), tuple(entity.position))
+                            if distance < entity.dna.senserange and distance < minDistance:
+                                closestApple = apple
+                                minDistance = distance
+
                 
-    
+                    # Entity functions
+                    entity.draw_entity(win.screen, DrawTypes.IMAGE)
+                    pygame.draw.circle(win.screen, tuple(DefinedColors.blue), tuple(entity.position), entity.dna.senserange, width=2)
+
+                    if closestApple == None:
+                        entity.move(Vector(random.randint(-entity.dna.speed, entity.dna.speed), random.randint(-entity.dna.speed, entity.dna.speed)), win.config)
+                        #entity.move_towards(Vector(random.randint(0, WIDTH), random.randint(0, HEIGHT)), win.config)
+                    else:
+                        entity.move_towards(closestApple.position, win.config)
+
+                    if cell != WorldMap.key(entity):   
+                        WorldMap.remove_from_key(cell, entity)
+                        WorldMap.insert(entity)   
 
     ## End
 

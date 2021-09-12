@@ -59,13 +59,35 @@ class DefinedColors:
     green = Color(30, 225, 30)
     blue = Color(30, 30, 225)
 
-class simpleMath:
-
-    def clamp(x: float, a: float, b: float) -> float: # Clamp the value(x) in between two values (a and b)
-        return math.min(math.max(x,a),b)
+# some simple math functions
+def clamp(x: float, a: float, b: float) -> float: # Clamp the value(x) in between two values (a and b)
+    return math.min(math.max(x,a),b)
     
-    def sat(x: float) -> float: # clamp the value between 0 and 1
-        return math.min(math.max(x, 0.0), 1.0)
+def sat(x: float) -> float: # clamp the value between 0 and 1
+    return math.min(math.max(x, 0.0), 1.0)
 
-    def lerp(x: float, a: float, b: float) -> float: # lineair interpolation lol
-        return x * (b-a) + a
+def lerp(x: float, a: float, b: float) -> float: # lineair interpolation lol
+    return x * (b-a) + a
+
+
+# Euclidean function
+def euclidean(a: list or tuple, b: list or tuple):
+    """
+    Calculating distance between 2 points on the screen
+    """
+    assert len(a) == len(b), "Error: both arguments should have same arraysize"
+
+    result: float = 0
+
+    for index in range(len(a)):
+        result += (a[index] - b[index]) ** 2 # (a - b) ^2
+    
+    return math.sqrt(result)
+
+def is_positive(x: int or float) -> int:
+
+    if x < 0:
+        return -1
+
+    else:
+        return 1
