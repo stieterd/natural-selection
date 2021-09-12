@@ -36,7 +36,7 @@ for x in range(500):
     color: Color = DefinedColors.black
 
     size: Vector = Vector(10, 10)
-    senserange: float = 100
+    senserange: float = 30
     speed: int = 2
 
     dna: Dna = Dna(size, senserange, speed)
@@ -56,7 +56,7 @@ sceneObjects = {    EntTypes.herbivores: creatures,
                     EntTypes.apples: apples
                     }
 
-WorldMap: World = World(30, sceneObjects)
+WorldMap: World = World(300, sceneObjects)
 
 # Main Game Loop
 while win.events_struct.event_running:
@@ -95,7 +95,7 @@ while win.events_struct.event_running:
                         
                         if entity.collides(apple):
                             key = WorldMap.key(apple)
-                            #WorldMap.remove_from_key(key, apple)
+                            WorldMap.remove_from_key(key, apple)
                             
                             entity.energy += apple.glucose
                             
@@ -108,7 +108,7 @@ while win.events_struct.event_running:
                 
                     # Entity functions
                     entity.draw_entity(win.screen, DrawTypes.IMAGE)
-                    # pygame.draw.circle(win.screen, tuple(DefinedColors.blue), tuple(entity.position), entity.dna.senserange, width=2)
+                    pygame.draw.circle(win.screen, tuple(DefinedColors.blue), tuple(entity.position + entity.size//2), entity.dna.senserange, width=2)
 
                     if closestApple == None:
                         entity.move(Vector(random.randint(-entity.dna.speed, entity.dna.speed), random.randint(-entity.dna.speed, entity.dna.speed)), win.config)
@@ -119,7 +119,6 @@ while win.events_struct.event_running:
                     if cell != WorldMap.key(entity):   
                         WorldMap.remove_from_key(cell, entity)
                         WorldMap.insert(entity)   
-
     ## End
 
     # Draw fps

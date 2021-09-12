@@ -14,11 +14,31 @@ class Vector:
 
     def __add__(self, adder):
 
-        self.x += adder.x
-        self.y += adder.y
+        x = self.x + adder.x
+        y = self.y + adder.y
 
-        return self
+        return Vector(x, y)
+
+    def __sub__(self, subtractor):
+
+        x = self.x - subtractor.x
+        y = self.y - subtractor.y
+
+        return Vector(x,y)
     
+    def __mul__(self, multiplier):
+
+        x = self.x * multiplier
+        y = self.y * multiplier
+
+        return Vector(x, y)
+
+    def __floordiv__(self, diviser):
+
+        x = self.x / diviser
+        y = self.y / diviser
+
+        return Vector(x,y)
     
     def __str__(self):
         return f"Vector({self.x},{self.y})"

@@ -40,6 +40,14 @@ class HashMap(object):
             
         )
     
+    def key_pos(self, position: Vector) -> tuple:
+        cell_size: float = self.cell_size
+
+        return (
+            int((math.floor(position.x/cell_size))*cell_size),
+            int((math.floor(position.y/cell_size))*cell_size),
+        )
+    
     def remove_from_key(self, key, entity: Entity) -> None:
         """
         Remove entity from hashmap
@@ -57,10 +65,15 @@ class HashMap(object):
    
     def query(self, entity: Entity, entType:int) -> list:
         """
-        Return all objects in the cell specified by point.
+        Return all objects in the cell specified by entity.
         """
         
         return dict_setdefault(dict_setdefault( self.grid, self.key(entity), {}), entType, [])
 
 
+    def query_from_pos(self, pos: Vector, entType: int):
+        """
+        Return all objects in the cell specified by point.
+        """
 
+        return dict_setdefault(dict_setdefault( self.grid, self.key_pos(pos), {}), entType, [])
