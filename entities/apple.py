@@ -1,7 +1,24 @@
+from engine.window import Window
 from entities.entity import Entity
+from entities.types import EntTypes
 from engine.mathfunctions import *
 
 import pygame
+import random
+
+def generate_apples(win: Window, config: dict, nEntities: int, image: pygame.image) -> list:
+    
+    apples = []
+
+    for _ in range(nEntities):   
+        pos: Vector = Vector(random.randint(0, win.config.screen_width), random.randint(0, win.config.screen_height))
+        size: Vector = Vector(config["apple_size"], config["apple_size"])
+        color: Color = DefinedColors.red
+
+        apple: Apple = Apple(EntTypes.apples, pos, size, color, image)
+        apples.append(apple)
+
+    return apples
 
 class Apple(Entity):
     """

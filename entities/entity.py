@@ -13,9 +13,10 @@ class Entity(Drawable):
     # Constructor for entity -> sets position, size
     def __init__(self, entityType, position: Vector, size: Vector, color: Color, image: pygame.image) -> None:
 
+        self.START_POSITION: Vector = position # CONSTANT, WONT EVER CHANGE
+
         self.entityType = entityType
 
-        self.START_POSITION: Vector = position # CONSTANT, WONT EVER CHANGE
         self.position: Vector = position
         
         self.size: Vector = size
@@ -26,6 +27,10 @@ class Entity(Drawable):
             self.image = None
         else:
             self.image: pygame.image =  pygame.transform.scale(image, tuple(size)) # dget imager ihiihi
+
+    def get_center_pos(self) -> Vector:
+
+        return self.position + self.size/2
 
     # Change the position 
     def move(self, translate: Vector, winsettings: WindowSettings) -> None:
@@ -41,8 +46,7 @@ class Entity(Drawable):
             self.position.y += abs(translate.y)
         elif self.position.y + self.size.y > winsettings.screen_height:
             self.position.y -= abs(translate.y)
-    
-    
+        
     # virtual method, may be overwritten by parent class, draws entity to the screen
     def draw_entity(self, screen: pygame.Surface, drawmethod: int) -> None:
 

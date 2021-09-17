@@ -24,7 +24,7 @@ class Window:
     # Look what events just processed and execute functions written in events.py
     def check_events(self) -> None:
         for event in pygame.event.get():
-            self.events_struct = Events.check_events(event.type, self.events_struct)
+            self.events_struct = Events.check_events(event, event.type, self.events_struct)
     
     def update_fps(self):
         fps = str(int(self.CLOCK.get_fps()))

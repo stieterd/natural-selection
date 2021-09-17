@@ -1,0 +1,15 @@
+{
+
+    "window_height": 768,
+    "window_width": 1366,
+    "window_fps": 120,
+
+    "creature_size": 10,
+    "creature_sense": 40,
+    "creature_speed": 2,
+    "creature_life_length_d": 4,
+
+    "apple_size": 10,
+    
+    "day_length_s": 120
+}

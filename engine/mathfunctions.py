@@ -33,7 +33,7 @@ class Vector:
 
         return Vector(x, y)
 
-    def __floordiv__(self, diviser):
+    def __truediv__(self, diviser):
 
         x = self.x / diviser
         y = self.y / diviser

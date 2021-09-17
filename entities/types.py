@@ -1,7 +1,4 @@
 
-from entities.herbivores import Herbivore
-from enum import Enum
-
 class EntTypes(object): # Enum
     
     """
