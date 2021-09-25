@@ -1,3 +1,4 @@
+from os import abort
 from entities.dna import Dna
 from entities.entity import Entity
 from entities.types import EntTypes
@@ -47,7 +48,8 @@ nApples = 400
 nHerbivores = 200
 
 # Creating the entity list
-apples = generate_apples(win, config, nApples, loaded_images.EntImages.Herbivore)
+appleArguments = [win, config, nApples, loaded_images.EntImages.Herbivore]
+apples = generate_apples(*appleArguments)
 creatures = generate_herbivores(win, config, nHerbivores, loaded_images.EntImages.Herbivore)
 
 # Generating WorldMap
@@ -128,22 +130,28 @@ while win.events_struct.event_running:
                         pygame.draw.circle(win.screen, tuple(DefinedColors.blue), tuple(entity.get_center_pos()), entity.dna.senserange, width=2)                        
 
                     cell = WorldMap.key(entity) # the key of the cell the entity is inside
-            
+
+                    ## Move the entity
                     if closestApple == None:
                         entity.move(Vector(random.randint(-entity.dna.speed, entity.dna.speed), random.randint(-entity.dna.speed, entity.dna.speed)), win.config)
                         #entity.move_towards(Vector(random.randint(0, WIDTH), random.randint(0, HEIGHT)), win.config)
                     else:
                         entity.move_towards(closestApple.get_center_pos(), win.config)
 
+                    # Remove entity from unused cells
                     if cell != WorldMap.key(entity):   
                         WorldMap.remove_from_key(cell, entity)
                         WorldMap.insert(entity)   
 
+    ## WorldMap functions for every loop 
     WorldMap.current_day.frames_passed += 1
 
     if WorldMap.current_day.get_passed_seconds() >= config["day_length_s"]:
-        WorldMap.new_day()
+        WorldMap.new_day(appleArguments)
 
+    secs = str(int(WorldMap.current_day.get_passed_seconds())) + " seconds"
+    secs_fnt = win.FONT.render(secs, 1, tuple(DefinedColors.blue))
+    win.screen.blit(secs_fnt, (10,40))
     ## End
 
     # Draw fps

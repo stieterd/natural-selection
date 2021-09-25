@@ -27,8 +27,8 @@ class Window:
             self.events_struct = Events.check_events(event, event.type, self.events_struct)
     
     def update_fps(self):
-        fps = str(int(self.CLOCK.get_fps()))
-        fps_text = self.FONT.render(fps, 1, tuple(DefinedColors.red))
+        fps = str(int(self.CLOCK.get_fps())) + " FPS"
+        fps_text = self.FONT.render(fps, 1, tuple(DefinedColors.blue))
         return fps_text
 
     # draw an Entity to the screen

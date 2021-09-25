@@ -28,5 +28,5 @@ class Apple(Entity):
     """
     def __init__(self, entityType: int, position: Vector, size: Vector, color: Color, image: pygame.image) -> None:
         super().__init__(entityType, position, size, color, image)
-        self.glucose: int = 100 # The energy the apple gives when eating it 
+        self.glucose: int = 1000 # The energy the apple gives when eating it 
     

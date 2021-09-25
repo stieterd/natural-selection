@@ -7,3 +7,5 @@ class Dna:
         self.size = size
         self.senserange = senserange
         self.speed = speed
+
+    

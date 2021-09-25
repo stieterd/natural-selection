@@ -1,6 +1,8 @@
+from engine.window import Window
 from entities.herbivores import Herbivore
 from entities.entity import Entity
 from entities.types import EntTypes
+from entities.apple import Apple, generate_apples
 
 from world.hashmap import HashMap, dict_setdefault
 from world.days import Day
@@ -17,15 +19,16 @@ class World(HashMap):
 
         super().__init__(cell_size)
 
+        self.set_entities_on_grid(entities)
+
+    def set_entities_on_grid(self, entities: dict):
+        self.grid = {}
         for entType in entities:
-            
             for ent in entities[entType]:
-                
                 dict_setdefault(dict_setdefault( self.grid, self.key(ent), {}), ent.entityType, []).append(ent)
-   
                 #dict_setdefault(self.grid, self.key(ent),[]).append(ent)
     
-    def new_day(self) -> None:
+    def new_day(self, appleArguments:list) -> None:
 
         d_nmbr = self.current_day.day_nmbr + 1
         self.current_day = Day(self.current_day.frames_per_sec, d_nmbr)
@@ -45,7 +48,7 @@ class World(HashMap):
                         entity.energy -= entity.energy_need
 
                         # Check if still alive
-                        if entity.days > entity.lifespan or entity.energy < entity.energy_need:
+                        if entity.days > entity.lifespan or entity.energy < 0:
                             continue
                         
                         # Mating potential
@@ -55,7 +58,9 @@ class World(HashMap):
                         # Survived
                         surviving_entities.append(entity)
 
-                        
+        apples_list = generate_apples(*appleArguments)
+        all_entities = {EntTypes.herbivores: surviving_entities, EntTypes.apples: apples_list}
+        self.set_entities_on_grid(all_entities)
 
     def looping(self):
         """

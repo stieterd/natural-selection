@@ -37,7 +37,7 @@ class Herbivore(Entity):
     Herbivores can only eat vegitibles, this means they wont form a threat to each other.
     """
 
-    STARTING_ENERGY = 100 # The energy an entity starts with when entering the first day
+    STARTING_ENERGY = 5000 # The energy an entity starts with when entering the first day
     MATING_ENERGY_COST = 200 
 
     def __init__(self, entityType: int, position: Vector, dna: Dna, lifespan: int, color: Color, image: pygame.image) -> None:
@@ -64,7 +64,14 @@ class Herbivore(Entity):
 
         self.move(Vector(transl_x,transl_y), winsettings)
 
+    def walk_path(self, WIDTH: int, HEIGHT: int):
+        pass
 
+    def give_birth(self, otherParent: "Herbivore") -> "Herbivore":
+
+        #otherParent.dna
+        pass
+    
     def remove_energy(self):
         pass
 

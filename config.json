@@ -2,7 +2,7 @@
 
     "window_height": 768,
     "window_width": 1366,
-    "window_fps": 120,
+    "window_fps": 60,
 
     "creature_size": 10,
     "creature_sense": 40,
@@ -11,5 +11,5 @@
 
     "apple_size": 10,
     
-    "day_length_s": 120
+    "day_length_s": 15
 }
