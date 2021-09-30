@@ -7,6 +7,7 @@ class Event_Types(object): # Basically a struct with events lmao
     event_pause: bool
     
     showdbg: bool = False 
+    speedup: bool = False
 
 class Events:
 
@@ -26,5 +27,9 @@ class Events:
             # Debug On
             if event.key == pygame.K_p:
                 events_struct.showdbg = not events_struct.showdbg
+
+            # Speedup On
+            if event.key == pygame.K_s:
+                events_struct.speedup = not events_struct.speedup
             
         return events_struct

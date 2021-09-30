@@ -1,4 +1,3 @@
-from os import abort
 from entities.dna import Dna
 from entities.entity import Entity
 from entities.types import EntTypes
@@ -10,7 +9,7 @@ from world.days import Day
 
 from engine.window import Window
 from engine.mathfunctions import *
-from engine.drawable import DrawTypes
+from engine.drawable import DrawTypes, draw_hud_text
 
 from multiprocessing import Pool
 
@@ -44,7 +43,7 @@ from images import loaded_images
 creatures = []
 
 
-nApples = 400
+nApples = 300
 nHerbivores = 200
 
 # Creating the entity list
@@ -64,7 +63,7 @@ WorldMap: World = World(60, sceneObjects, day)
 # Main Game Loop
 while win.events_struct.event_running:
     
-    # Getting all the events
+    # Getting all the events    
     win.check_events()
 
     # Fill background
@@ -73,28 +72,37 @@ while win.events_struct.event_running:
     # Check if paused 
     win.paused()   
 
+    ## WorldMap functions for every loop 
+    WorldMap.current_day.frames_passed += 1
+
     ## Here the scene objects get drawn ##
-   
+    n_apples = 0
     for gridCell in list(WorldMap.grid): # MIGHT REMOVE LIST CAST
 
         for entityType in list(WorldMap.grid[gridCell]):
 
             entity: Entity 
             for entity in WorldMap.grid[gridCell][entityType]:
-
+                # If entity is apple draw the apple onto the screen
                 if entity.entityType == EntTypes.apples: # String comparison takes a lot of processing power, ill probably switch to integers
-                    entity.draw_entity(win.screen, DrawTypes.RECT)
-
+                    n_apples += 1
+                    if not win.events_struct.speedup:
+                        entity.draw_entity(win.screen, DrawTypes.RECT)
+                # If entity is herbivore
                 elif entity.entityType == EntTypes.herbivores: # String comparions takes a lot of processing power
-
+                    
+                    # The minimum distance to/and the apple that is closest to the entity
                     closestApple: Apple = None
-                    minDistance: float = entity.dna.senserange # Very big value
+                    minDistance: float = entity.dna.senserange.get_value() # Very big value
                     
-                    nTiles = int(math.ceil(entity.dna.senserange / WorldMap.cell_size))
+                    # Amount of tiles to check for entity collision
+                    nTiles = int(math.ceil(entity.dna.senserange.get_value() / WorldMap.cell_size))
 
-                    position = entity.get_center_pos() - Vector(entity.dna.senserange, entity.dna.senserange)
-                    tiles = [] 
+                    # Herbivore position
+                    position = entity.get_center_pos() - Vector(entity.dna.senserange.get_value(), entity.dna.senserange.get_value())
                     
+                    # Get the tiles to check for entity collision 
+                    tiles = [] 
                     for y in range(nTiles * 2):
                         lst = []
                         for x in range(nTiles * 2):
@@ -105,9 +113,10 @@ while win.events_struct.event_running:
                     
                     tiles = [item for sublist in tiles for item in sublist]
                     
+                    # Iterate over the tiles for checking collision
                     for tile in tiles:
                         
-                        if win.events_struct.showdbg:
+                        if win.events_struct.showdbg and not win.events_struct.speedup:
                             pygame.draw.rect(win.screen, tuple(DefinedColors.black), (tuple(tile), tuple(Vector(WorldMap.cell_size, WorldMap.cell_size))), width=1)
 
                         #currentCell = WorldMap.query(entity, EntTypes.apples)
@@ -120,20 +129,21 @@ while win.events_struct.event_running:
                                 WorldMap.remove_from_key(key, apple)
                                 entity.energy += apple.glucose
 
-                            elif distance < entity.dna.senserange and distance < minDistance:
+                            elif distance < entity.dna.senserange.get_value() and distance < minDistance:
                                 closestApple = apple
                                 minDistance = distance
                                         
-                    # Entity functions
-                    entity.draw_entity(win.screen, DrawTypes.IMAGE)
-                    if win.events_struct.showdbg:
-                        pygame.draw.circle(win.screen, tuple(DefinedColors.blue), tuple(entity.get_center_pos()), entity.dna.senserange, width=2)                        
+                    # Draw Herbivore on screen
+                    if not win.events_struct.speedup:
+                        entity.draw_entity(win.screen, DrawTypes.RECT)
+                        if win.events_struct.showdbg:
+                            pygame.draw.circle(win.screen, tuple(DefinedColors.blue), tuple(entity.get_center_pos()), entity.dna.senserange.get_value(), width=2)                        
 
                     cell = WorldMap.key(entity) # the key of the cell the entity is inside
 
                     ## Move the entity
                     if closestApple == None:
-                        entity.move(Vector(random.randint(-entity.dna.speed, entity.dna.speed), random.randint(-entity.dna.speed, entity.dna.speed)), win.config)
+                        entity.move(Vector(random.choice([-entity.dna.speed.get_value(), entity.dna.speed.get_value()]), random.choice([-entity.dna.speed.get_value(), entity.dna.speed.get_value()])), win.config)
                         #entity.move_towards(Vector(random.randint(0, WIDTH), random.randint(0, HEIGHT)), win.config)
                     else:
                         entity.move_towards(closestApple.get_center_pos(), win.config)
@@ -143,22 +153,45 @@ while win.events_struct.event_running:
                         WorldMap.remove_from_key(cell, entity)
                         WorldMap.insert(entity)   
 
-    ## WorldMap functions for every loop 
-    WorldMap.current_day.frames_passed += 1
+    if WorldMap.current_day.get_passed_seconds() >= config["day_length_s"] or n_apples < 1:
+        WorldMap.new_day(win, config, appleArguments)
 
-    if WorldMap.current_day.get_passed_seconds() >= config["day_length_s"]:
-        WorldMap.new_day(appleArguments)
+    if not win.events_struct.speedup:
+        # HUD DATA
+    
+        text_y_pos = WIDTH - 220
 
-    secs = str(int(WorldMap.current_day.get_passed_seconds())) + " seconds"
-    secs_fnt = win.FONT.render(secs, 1, tuple(DefinedColors.blue))
-    win.screen.blit(secs_fnt, (10,40))
-    ## End
+        # Passed seconds draw on screen
+        secs = str(int(WorldMap.current_day.get_passed_seconds())) + " seconds"
+        draw_hud_text(win, secs, Vector(text_y_pos,30))
 
-    # Draw fps
-    win.screen.blit(win.update_fps(), (10,0))
+        # Passed Days draw on screen
+        days = str(WorldMap.current_day.day_nmbr) + " days"
+        draw_hud_text(win, days, Vector(text_y_pos,60))
 
-    # Finishing touches
-    win.CLOCK.tick(AVERAGE_FPS)
+        # Average DNA up to 3 decimals draw on screen
+        
+        dna = Dna(*WorldMap.average_dna_values)
+        n = 0
+        for key, value in dna.get_dict().items():
+            current_string = f"{key}: {round(value,3)}"
+            draw_hud_text(win, current_string, Vector(text_y_pos,90+n*30))
+            n +=1
 
-    # Flip the display
-    pygame.display.flip()
+        # Amount of entities alive
+
+        n_entities = str(int(WorldMap.n_herbivores)) + " herbivores"
+        draw_hud_text(win, n_entities,Vector(text_y_pos,180))
+
+        ## End
+
+        # Draw fps
+        win.screen.blit(win.update_fps(), (text_y_pos,0))
+
+        # Finishing touches like capping fps (no cap)
+    
+        win.CLOCK.tick(60)
+
+        # Flip the display
+        
+        pygame.display.flip()

@@ -76,6 +76,8 @@ class DefinedColors:
     white = Color(255,255,255)
 
     red = Color(225, 30, 30)
+    cyan = Color(30, 120, 120)
+    yellow = Color(220, 220, 30)
     green = Color(30, 225, 30)
     blue = Color(30, 30, 225)
 

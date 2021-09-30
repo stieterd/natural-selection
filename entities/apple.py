@@ -11,8 +11,8 @@ def generate_apples(win: Window, config: dict, nEntities: int, image: pygame.ima
     apples = []
 
     for _ in range(nEntities):   
-        pos: Vector = Vector(random.randint(0, win.config.screen_width), random.randint(0, win.config.screen_height))
         size: Vector = Vector(config["apple_size"], config["apple_size"])
+        pos: Vector = Vector(random.randint(0, win.config.screen_width - size.x - 10), random.randint(0, win.config.screen_height - size.y - 10))
         color: Color = DefinedColors.red
 
         apple: Apple = Apple(EntTypes.apples, pos, size, color, image)

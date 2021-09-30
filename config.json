@@ -4,12 +4,15 @@
     "window_width": 1366,
     "window_fps": 60,
 
-    "creature_size": 10,
-    "creature_sense": 40,
-    "creature_speed": 2,
+    "creature_start_x": 10,
+    "creature_size": 5,
+    "creature_sense": 20,
+    "creature_speed": 0.4,
     "creature_life_length_d": 4,
+    "creature_mutation_rate": 0.05,
 
     "apple_size": 10,
     
-    "day_length_s": 15
+    "day_length_s": 60
+
 }

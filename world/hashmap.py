@@ -27,7 +27,13 @@ class HashMap(object):
     def __init__(self, cell_size: float) -> None:
         self.cell_size: float = cell_size
         self.grid: dict = {}
-
+    
+    def get_entity_amount(self, entType:int):
+        n = 0
+        for cell in self.grid.values():
+            if entType in cell:
+                n += len(cell[entType])
+        return n
 
     def key(self, entity: Entity) -> tuple:
         cell_size: float = self.cell_size
