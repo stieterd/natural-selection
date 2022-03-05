@@ -11,8 +11,6 @@ from engine.window import Window
 from engine.mathfunctions import *
 from engine.drawable import DrawTypes, draw_hud_text
 
-from multiprocessing import Pool
-
 import math
 import pygame
 import random
@@ -43,8 +41,8 @@ from images import loaded_images
 creatures = []
 
 
-nApples = 300
-nHerbivores = 200
+nApples = 50
+nHerbivores = 3
 
 # Creating the entity list
 appleArguments = [win, config, nApples, loaded_images.EntImages.Herbivore]
@@ -118,10 +116,11 @@ while win.events_struct.event_running:
                         
                         if win.events_struct.showdbg and not win.events_struct.speedup:
                             pygame.draw.rect(win.screen, tuple(DefinedColors.black), (tuple(tile), tuple(Vector(WorldMap.cell_size, WorldMap.cell_size))), width=1)
-
+                            
                         #currentCell = WorldMap.query(entity, EntTypes.apples)
                         currentCell = WorldMap.query_from_pos(tile, EntTypes.apples)
                         for apple in currentCell:
+                            
                             distance = euclidean(tuple(apple.get_center_pos()), tuple(entity.get_center_pos()))
 
                             if entity.collides(apple):
@@ -138,13 +137,13 @@ while win.events_struct.event_running:
                         entity.draw_entity(win.screen, DrawTypes.RECT)
                         if win.events_struct.showdbg:
                             pygame.draw.circle(win.screen, tuple(DefinedColors.blue), tuple(entity.get_center_pos()), entity.dna.senserange.get_value(), width=2)                        
-
+                            draw_hud_text(win, str(entity.endposition), entity.get_center_pos())
                     cell = WorldMap.key(entity) # the key of the cell the entity is inside
 
                     ## Move the entity
                     if closestApple == None:
-                        entity.move(Vector(random.choice([-entity.dna.speed.get_value(), entity.dna.speed.get_value()]), random.choice([-entity.dna.speed.get_value(), entity.dna.speed.get_value()])), win.config)
-                        #entity.move_towards(Vector(random.randint(0, WIDTH), random.randint(0, HEIGHT)), win.config)
+                        #entity.move(Vector(random.choice([-entity.dna.speed.get_value(), entity.dna.speed.get_value()]), random.choice([-entity.dna.speed.get_value(), entity.dna.speed.get_value()])), win.config)
+                        entity.walk_path(win.config)
                     else:
                         entity.move_towards(closestApple.get_center_pos(), win.config)
 

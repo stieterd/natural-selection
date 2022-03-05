@@ -20,14 +20,14 @@ class Property:
 class Dna(object):
 
     size: Property
-    senserange: Property
     speed: Property
+    senserange: Property
 
-    def __init__(self, size: Property, senserange: Property, speed: Property):
+    def __init__(self, size: Property, speed: Property, senserange: Property):
         
         self.size = size
-        self.senserange = senserange
         self.speed = speed
+        self.senserange = senserange
 
     def get_properties(self) -> list:
         return list(asdict(self).values())

@@ -1,18 +1,21 @@
 {
+    "fullscreen": false,
+    "nApples": 150,
+    "nHerbivores": 50,
 
-    "window_height": 768,
-    "window_width": 1366,
+    "window_height": 720,
+    "window_width": 1280,
     "window_fps": 60,
 
     "creature_start_x": 10,
-    "creature_size": 5,
-    "creature_sense": 20,
-    "creature_speed": 0.4,
+    "creature_size": 1,
+    "creature_sense": 1,
+    "creature_speed": 1,
     "creature_life_length_d": 4,
-    "creature_mutation_rate": 0.05,
+    "creature_mutation_rate": 0.005,
 
     "apple_size": 10,
     
-    "day_length_s": 60
+    "day_length_s": 72
 
 }

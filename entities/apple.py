@@ -1,7 +1,9 @@
 from engine.window import Window
 from entities.entity import Entity
 from entities.types import EntTypes
+from entities.entity_factors import AppleFactors
 from engine.mathfunctions import *
+
 
 import pygame
 import random
@@ -28,5 +30,5 @@ class Apple(Entity):
     """
     def __init__(self, entityType: int, position: Vector, size: Vector, color: Color, image: pygame.image) -> None:
         super().__init__(entityType, position, size, color, image)
-        self.glucose: int = 1000 # The energy the apple gives when eating it 
+        self.glucose: int = AppleFactors.APPLE_GLUCOSE # The energy the apple gives when eating it 
     

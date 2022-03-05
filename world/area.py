@@ -86,12 +86,13 @@ class World(HashMap):
 
     def update_stats(self, firstday=False):
         """Update statistics in a txt doc (can be converted to csv lmaoooo)"""
+        #print(self.average_dna_values)
         my_average_dna = Dna(*self.average_dna_values)
         factor = 10**3
-        data = f"{self.current_day.day_nmbr};{int(my_average_dna.size*factor)};{int(my_average_dna.speed*factor)};{int(my_average_dna.senserange*factor)}\n"
+        data = f"{self.current_day.day_nmbr};{int(my_average_dna.size*factor/2)};{int(my_average_dna.speed*factor/2)};{int(my_average_dna.senserange*factor/2)};{self.n_herbivores}\n"
         if firstday:
             with open("stats.txt", "w") as fw:
-                fw.write(f"day;avg_size;avg_speed;avg_senserange\n")
+                fw.write(f"day;avg_size;avg_speed;avg_senserange;n_creatures\n")
                 fw.write(data)
         else:
             with open("stats.txt", "a") as fw:
@@ -131,8 +132,8 @@ class World(HashMap):
     def give_entities_birth(self, config) -> list:
         """First call update_entity_variables before calling this function"""
         # Empty lists for assigning entities for next day 
-        entities_replicate = []
-        surviving_entities = []
+        entities_replicate: list[Herbivore] = []
+        surviving_entities: list[Herbivore] = []
         for gridCell in list(self.grid): # MIGHT REMOVE LIST CAST
             for entityType in list(self.grid[gridCell]):       
                 for entity in self.grid[gridCell][entityType]:
@@ -145,7 +146,7 @@ class World(HashMap):
         random.shuffle(entities_replicate)
         # Birth of new entities
         for idx in range(len(entities_replicate)//2):
-            surviving_entities.append(entities_replicate[2*idx].give_birth(entities_replicate[2*idx+1], config))
+            surviving_entities.extend(entities_replicate[2*idx].giving_birth_to_multiple_creatures(entities_replicate[2*idx+1], config))
         return surviving_entities
 
     def looping(self):
@@ -169,6 +170,8 @@ class World(HashMap):
         ent: Herbivore
         n: int = 0
         #print(entities)
+        if len(entities) < 1:
+            raise TypeError("All entities are dead (RIP) :(")
         for idx,ent in enumerate(entities):
             n += 1
             property: Property
