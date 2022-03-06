@@ -46,7 +46,7 @@ nApples = config["nApples"]
 nHerbivores = config["nHerbivores"]
 
 # Creating the entity list
-appleArguments = [win, config, nApples, loaded_images.EntImages.Herbivore]
+appleArguments = [win, config, nApples, loaded_images.EntImages.Apple]
 apples = generate_apples(*appleArguments)
 creatures = generate_herbivores(win, config, nHerbivores, loaded_images.EntImages.Herbivore)
 

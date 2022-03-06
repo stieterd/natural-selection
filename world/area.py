@@ -24,6 +24,7 @@ class World(HashMap):
         Each type of Entity will get its own hashmap
         Key hashing is not hashing so keys are same for all hashmaps :slight_smile:
         """
+        self.dominant_genes = [0,0,0]
         self.current_day = day
         self.n_herbivores = len(entities[EntTypes.herbivores])
         self.average_dna_values = self.get_avg_dna(list(entities.values())[0])
@@ -89,16 +90,18 @@ class World(HashMap):
         #print(self.average_dna_values)
         my_average_dna = Dna(*self.average_dna_values)
         factor = 10**3
-        data = f"{self.current_day.day_nmbr};{int(my_average_dna.size*factor/2)};{int(my_average_dna.speed*factor/2)};{int(my_average_dna.senserange*factor/2)};{self.n_herbivores}\n"
+        data = f"{self.current_day.day_nmbr};{int(my_average_dna.size*factor/2)};{int(my_average_dna.speed*factor/2)};{int(my_average_dna.senserange*factor/2)};{int(self.dominant_genes[0]*factor)};{int(self.dominant_genes[1]*factor)};{int(self.dominant_genes[2]*factor)};{self.n_herbivores}\n"
         if firstday:
             with open("stats.txt", "w") as fw:
-                fw.write(f"day;avg_size;avg_speed;avg_senserange;n_creatures\n")
+                fw.write(f"day;avg_size;avg_speed;avg_senserange;dominant_size;dominant_speed;dominant_sense;n_creatures\n")
                 fw.write(data)
         else:
             with open("stats.txt", "a") as fw:
                 fw.write(data)
     def update_entity_variables(self) -> None:
         """Updates the entity methods each new day"""
+        self.dominant_genes = [0,0,0]
+        n_entities = self.get_entity_amount(EntTypes.herbivores)
         for gridCell in list(self.grid): # MIGHT REMOVE LIST CAST
             for entityType in list(self.grid[gridCell]):       
                 for entity in self.grid[gridCell][entityType]:
@@ -110,6 +113,9 @@ class World(HashMap):
                     entity.days += 1
                     entity.position = entity.START_POSITION
                     entity.energy -= entity.energy_need
+                    self.dominant_genes[0] += entity.dna.size.get_dominant()/n_entities
+                    self.dominant_genes[1] += entity.dna.speed.get_dominant()/n_entities
+                    self.dominant_genes[2] += entity.dna.senserange.get_dominant()/n_entities
 
     def get_surviving_entities(self) -> list:
         """First call update_entity_variables before calling this function"""

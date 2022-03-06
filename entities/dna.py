@@ -15,7 +15,13 @@ class Property:
     
     def get_value(self):
         return self.pAllel.value + self.mAllel.value
-
+    
+    def get_dominant(self):
+        """returns 1 if its AA else returns 0"""
+        x = 0
+        if self.pAllel.dominant and self.mAllel.dominant:
+            x = 1
+        return x
 @dataclass
 class Dna(object):
 

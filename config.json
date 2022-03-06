@@ -12,7 +12,7 @@
     "creature_sense": 1,
     "creature_speed": 1,
     "creature_life_length_d": 4,
-    "creature_mutation_rate": 0.005,
+    "creature_mutation_rate": 0.01,
 
     "apple_size": 10,
     

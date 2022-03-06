@@ -1,7 +1,7 @@
 
 class AppleFactors:
     '''Apple data'''
-    MAX_APPLES_FACTOR: float = 1
+    MAX_APPLES_FACTOR: float = 2.5
     APPLE_GLUCOSE: float = 2
 
 class HerbivoreFactors:

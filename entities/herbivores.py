@@ -50,7 +50,7 @@ class Herbivore(Entity):
         
         # Entity Properties
         self.dna: Dna = dna # DNA of the entity 
-        self.max_energy: int = int(self.dna.size.get_value() * HerbivoreFactors.SIZE * AppleFactors.MAX_APPLES_FACTOR)
+        self.max_energy: float = self.dna.size.get_value() * AppleFactors.APPLE_GLUCOSE * AppleFactors.MAX_APPLES_FACTOR
         
         self.STARTING_ENERGY: float = 0.5 * dna.size.get_value() * dna.speed.get_value()**2 + 0.25 * dna.senserange.get_value() # The energy an entity starts with when entering the first day
         self.MATING_ENERGY_COST = self.STARTING_ENERGY/2 
@@ -116,15 +116,12 @@ class Herbivore(Entity):
         # Subtracting the energy cost of making a child
         otherParent.energy -= otherParent.MATING_ENERGY_COST
         self.energy -= self.MATING_ENERGY_COST
-        for arg in new_dna_args:
-            print(arg.get_value())
-        print()
         return Herbivore(otherParent.entityType, otherParent.position, Dna(*new_dna_args), config["creature_life_length_d"], otherParent.color, otherParent.image)
     
     def mutate(self, value:float, mutation_rate:float) -> float:
 
         mutate_fac: float = (random.random() * 2 - 1) * mutation_rate  # Random float between -1 and 1 multiplied by the mutation rate
-        return float(value + mutate_fac) 
+        return abs(float(value + mutate_fac)) 
 
     def remove_energy(self):
         pass
