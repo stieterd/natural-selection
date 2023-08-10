@@ -1,4 +1,4 @@
-## Invloed natuurlijke selectie bij wezens met verschillende genetische variabelen ##
+## Influence of natural selection for entities with different genes ##
 - installeer alle benodigde packages door het runnen van `pip install -r requirements.txt`
 - zet de configuratie die bij u het beste past aan in de config.json file
     - de configuratie die wij gebruikten in onze simulatie is automatisch al aangesteld in onze config.json
